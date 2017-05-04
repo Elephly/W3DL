@@ -15,7 +15,7 @@
   "bugs": {
     "url": "https://github.com/nicholaschiasson/W3DL/issues"
   },
-  "homepage": "https://elephly.github.io/W3DL/index.html",
+  "homepage": "https://nicholaschiasson.github.io/W3DL/index.html",
   "dependencies": {
     "jsdoc-api": "^1.1.0",
     "rimraf": "^2.5.3",
