@@ -8,12 +8,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Elephly/W3DL.git"
+    "url": "git+https://github.com/nicholaschiasson/W3DL.git"
   },
-  "author": "omer@namnamnamnam.com",
+  "author": "nicholaschiasson@namnamnamnam.com",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Elephly/W3DL/issues"
+    "url": "https://github.com/nicholaschiasson/W3DL/issues"
   },
   "homepage": "https://elephly.github.io/W3DL/index.html",
   "dependencies": {

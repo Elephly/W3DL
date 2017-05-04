@@ -10,7 +10,8 @@
  */
 
 /**
- * @todo Documentation.
+ * A class to represent a matrix of any dimension, supporting operations that
+ * are functionally portable across all matrices.
  * @class
  * @abstract
  */
@@ -25,13 +26,28 @@ W3DL.Matrix = class Matrix {
     if (this.vectorMultiply === undefined || typeof this.vectorMultiply !== "function") {
       throw new TypeError("Override required for method: vectorMultiply");
     }
+
+    /**
+     * A two dimensional array of numbers holding the entries of the matrix.
+     * @type {Number[][]}
+     */
     this.entries = null;
   }
 
+  /**
+   * Returns a matrix with the value 0 in each entry.
+   * @returns {W3DL.Matrix} The null matrix object.
+   */
   static NullMatrix() {
     return new this();
   }
 
+  /**
+   * Returns a matrix with the value 0 in each entry and the value 1 in
+   * entry[m][n], where m and n are the indices of the last row and column of
+   * the matrix, respectively.
+   * @returns {W3DL.Matrix} The zero matrix object.
+   */
   static ZeroMatrix() {
     var matrix = new this();
     var m = matrix.entries.length;
@@ -40,6 +56,12 @@ W3DL.Matrix = class Matrix {
     return matrix;
   }
 
+  /**
+   * Returns the identity matrix, a matrix with the value 0 in each entry and
+   * the value 1 in each entry[i][i] where i is an arbitrary index in the
+   * matrix less than both the maximum number of columns and rows.
+   * @returns {W3DL.Matrix} The identity matrix object.
+   */
   static IdentityMatrix() {
     var matrix = new this();
     for (var i = 0; i < matrix.entries.length; i++) {
@@ -51,6 +73,9 @@ W3DL.Matrix = class Matrix {
     return matrix;
   }
 
+  /**
+   * Sets each entry of the matrix called on to 0.
+   */
   nullify() {
     for (var i = 0; i < this.entries.length; i++) {
       for (var j = 0; j < this.entries[i].length; j++) {
@@ -59,6 +84,13 @@ W3DL.Matrix = class Matrix {
     }
   }
 
+  /**
+   * Returns a transposed matrix copy of the matrix called on. A transposed
+   * matrix is a matrix where for each pair of entries ([i][0-m], [0-n][i]),
+   * the entries are swapped, resulting in a matrix flipped about the identity
+   * matrix diagonal.
+   * @returns {W3DL.Matrix} The transposed matrix object.
+   */
   transposed() {
     var matrix = new this.constructor();
     for (var i = 0; i < this.entries.length; i++) {
@@ -71,6 +103,14 @@ W3DL.Matrix = class Matrix {
     return matrix;
   }
 
+  /**
+   * Returns a matrix resulting from the sum of the matrix called on and the
+   * input matrix parameter.
+   * @param {W3DL.Matrix} other The matrix object to be added to the matrix
+   *        called on.
+   * @returns {W3DL.Matrix} A matrix resulting from the sum of the matrix
+   *          called on and the input matrix parameter.
+   */
   add(other) {
     DEBUG && W3DL.Utils.ValidateArguments([this.constructor], arguments); // jshint ignore:line
     var matrix = new this.constructor();
@@ -82,6 +122,14 @@ W3DL.Matrix = class Matrix {
     return matrix;
   }
 
+  /**
+   * Returns a matrix resulting from the difference between the matrix called
+   * on and the input matrix parameter.
+   * @param {W3DL.Matrix} other The matrix object to be subtracted from the
+   *        matrix called on.
+   * @returns {W3DL.Matrix} A matrix resulting from the difference between the
+   *          matrix called on and the input matrix parameter.
+   */
   subtract(other) {
     DEBUG && W3DL.Utils.ValidateArguments([this.constructor], arguments); // jshint ignore:line
     var matrix = new this.constructor();
@@ -93,6 +141,16 @@ W3DL.Matrix = class Matrix {
     return matrix;
   }
 
+  /**
+   * Returns a matrix resulting from the multiplication between the matrix
+   * called on and the input parameter, which may be a number, a matrix, or a
+   * vector.
+   * @param {Number|W3DL.Matrix|W3DL.Vector} multiplier The multiplier for the
+   *        operation. This parameter is to be multiplied by the matrix called
+   *        on.
+   * @returns {W3DL.Matrix} A matrix resulting from the product of the matrix
+   *          called on and the input multiplier parameter.
+   */
   multiply(multiplier) {
     DEBUG && W3DL.Utils.ValidateArguments([[Number, W3DL.Matrix, W3DL.Vector]], arguments); // jshint ignore:line
     var product = null;
@@ -111,6 +169,11 @@ W3DL.Matrix = class Matrix {
     return product;
   }
 
+  /**
+   * Constructs a string of the entries of the matrix called on for easy
+   * reading.
+   * @returns {String} A string of the entries of the matrix called on.
+   */
   toString() {
     var str = "";
     this.entries.forEach(function(entry, index, array) {
