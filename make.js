@@ -14,7 +14,7 @@ var delim = (os.type() === "Windows_NT" ? "\\" : "/");
 
 var projRootDir = process.cwd();
 var projBinDir = path.join(projRootDir, "bin");
-var projDocDir = path.join(projRootDir, "W3DDOC");
+var projDocDir = path.join(projRootDir, "docs");
 var projShaderDir = path.join(projRootDir, "shaders");
 var projSrcDir = path.join(projRootDir, "src");
 var projTmpDir = path.join(projRootDir, ".tmp");
@@ -33,9 +33,9 @@ var defineStrings = {
 };
 
 var availableBuildTypes = {
-  array: ["w3dl", "jsdoc"],
+  array: ["w3dl", "docs"],
   w3dl:  function() { return this.array[0]; },
-  jsdoc: function() { return this.array[1]; }
+  docs: function() { return this.array[1]; }
 };
 
 // Parse arguments
@@ -145,12 +145,12 @@ buildTypes.forEach(function(buildType) {
         console.error("Failed to save " + outFileMap + ". " + err);
       }
     }
-  } else if (buildType === availableBuildTypes.jsdoc()) {
+  } else if (buildType === availableBuildTypes.docs()) {
     if (clean) {
       try {
         rimraf(projDocDir);
       } catch (err) {
-        console.error("Failed to remove jsdoc directory. " + err);
+        console.error("Failed to remove docs directory. " + err);
       }
     } else {
       try {
@@ -159,11 +159,11 @@ buildTypes.forEach(function(buildType) {
             destination: projDocDir,
             files: projSrcDir,
             recurse: true,
-            readme: path.join(projRootDir, "JSDOC_README.md")
+            readme: path.join(projRootDir, "DOC_README.md")
           }
         );
       } catch (err) {
-        console.error("Failed to build jsdocs. " + err);
+        console.error("Failed to build docs. " + err);
       }
     }
   } else {

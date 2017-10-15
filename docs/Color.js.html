@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Color.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Color.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// jshint esversion: 6
+
+/**
+ * This file defines classes for color objects and common color instances.
+ * @file
+ * @requires {@link Utils.js}
+ * @see W3DL.ColorRGBA
+ * @see W3DL.Colors
+ */
+
+/**
+ * A class to represent color objects using red, green, blue, and alpha color
+ * channels.
+ * @class
+ */
+W3DL.ColorRGBA = class ColorRGBA {
+  /**
+   * @param {Number} [red=0.0] A quantity from 0.0 to 1.0 for the color's red
+            channel.
+   * @param {Number} [green=0.0] A quantity from 0.0 to 1.0 for the color's
+            green channel.
+   * @param {Number} [blue=0.0] A quantity from 0.0 to 1.0 for the color's blue
+            channel.
+   * @param {Number} [alpha=1.0] A quantity from 0.0 to 1.0 representing the
+            color's transparency.
+   */
+  constructor(red = 0.0, green = 0.0, blue = 0.0, alpha = 1.0) {
+    DEBUG &amp;&amp; W3DL.Utils.ValidateArguments([Number, Number, Number, Number], arguments, 0); // jshint ignore:line
+
+    /**
+     * A quantity from 0.0 to 1.0 for the color's red channel.
+     * @type {Number}
+     */
+    this.red = red;
+
+    /**
+     * A quantity from 0.0 to 1.0 for the color's green channel.
+     * @type {Number}
+     */
+    this.green = green;
+
+    /**
+     * A quantity from 0.0 to 1.0 for the color's blue channel.
+     * @type {Number}
+     */
+    this.blue = blue;
+
+    /**
+     * A quantity from 0.0 to 1.0 representing the color's transparency.
+     * @type {Number}
+     */
+    this.alpha = alpha;
+  }
+
+  /**
+   * Returns the color object converted into an array with values for red,
+   * green, blue, and alpha at indices 0, 1, 2, and 3, respectively.
+   * @type {Number[]}
+   */
+  get toArray() {
+    return [this.red, this.green, this.blue, this.alpha];
+  }
+
+  /**
+   * Returns W3DL.ColorRGBA.toArray converted into a Float32Array.
+   * @type {Float32Array}
+   */
+  get toFloat32Array() {
+    return new Float32Array(this.toArray);
+  }
+};
+
+/**
+ * A class to hold various instances of well known colors for easy retrieval.
+ * @class
+ * @abstract
+ */
+W3DL.Colors = class Colors {
+  constructor() {
+    if (new.target === W3DL.Colors) {
+      throw new TypeError("Cannot construct instances of abstract class: " + new.target.name);
+    }
+  }
+
+  /**
+   * Returns a W3DL.ColorRGBA object representing the color
+   * &lt;strong>Black&lt;/strong>.
+   * @static
+   * @type {W3DL.ColorRGBA}
+   */
+  static get Black() {
+    this.__black = this.__black || new W3DL.ColorRGBA(0.0, 0.0, 0.0, 1.0);
+    return this.__black;
+  }
+
+  /**
+   * Returns a W3DL.ColorRGBA object representing the color
+   * &lt;strong>Blue&lt;/strong>.
+   * @static
+   * @type {W3DL.ColorRGBA}
+   */
+  static get Blue() {
+    this.__blue = this.__blue || new W3DL.ColorRGBA(0.0, 0.0, 1.0, 1.0);
+    return this.__blue;
+  }
+
+  /**
+   * Returns a W3DL.ColorRGBA object representing the color &lt;strong>Cornflower
+   * Blue&lt;/strong>.
+   * @static
+   * @type {W3DL.ColorRGBA}
+   */
+  static get CornflowerBlue() {
+    this.__cornflowerBlue = this.__cornflowerBlue || new W3DL.ColorRGBA(100.0 / 255.0, 149.0 / 255.0, 237.0 / 255.0, 1.0);
+    return this.__cornflowerBlue;
+  }
+
+  /**
+   * Returns a W3DL.ColorRGBA object representing the color
+   * &lt;strong>Cyan&lt;/strong>.
+   * @static
+   * @type {W3DL.ColorRGBA}
+   */
+  static get Cyan() {
+    this.__cyan = this.__cyan || new W3DL.ColorRGBA(0.0, 1.0, 1.0, 1.0);
+    return this.__cyan;
+  }
+
+  /**
+   * Returns a W3DL.ColorRGBA object representing the color
+   * &lt;strong>Green&lt;/strong>.
+   * @static
+   * @type {W3DL.ColorRGBA}
+   */
+  static get Green() {
+    this.__green = this.__green || new W3DL.ColorRGBA(0.0, 1.0, 0.0, 1.0);
+    return this.__green;
+  }
+
+  /**
+   * Returns a W3DL.ColorRGBA object representing the color
+   * &lt;strong>Magenta&lt;/strong>.
+   * @static
+   * @type {W3DL.ColorRGBA}
+   */
+  static get Magenta() {
+    this.__magenta = this.__magenta || new W3DL.ColorRGBA(1.0, 0.0, 1.0, 1.0);
+    return this.__magenta;
+  }
+
+  /**
+   * Returns a W3DL.ColorRGBA object representing the color
+   * &lt;strong>Red&lt;/strong>.
+   * @static
+   * @type {W3DL.ColorRGBA}
+   */
+  static get Red() {
+    this.__red = this.__red || new W3DL.ColorRGBA(1.0, 0.0, 0.0, 1.0);
+    return this.__red;
+  }
+
+  /**
+   * Returns a W3DL.ColorRGBA object representing the color
+   * &lt;strong>White&lt;/strong>.
+   * @static
+   * @type {W3DL.ColorRGBA}
+   */
+  static get White() {
+    this.__white = this.__white || new W3DL.ColorRGBA(1.0, 1.0, 1.0, 1.0);
+    return this.__white;
+  }
+
+  /**
+   * Returns a W3DL.ColorRGBA object representing the color
+   * &lt;strong>Yellow&lt;/strong>.
+   * @static
+   * @type {W3DL.ColorRGBA}
+   */
+  static get Yellow() {
+    this.__yellow = this.__yellow || new W3DL.ColorRGBA(1.0, 1.0, 0.0, 1.0);
+    return this.__yellow;
+  }
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="W3DL.ColorRGBA.html">ColorRGBA</a></li><li><a href="W3DL.Colors.html">Colors</a></li><li><a href="W3DL.GraphicsObject3D.html">GraphicsObject3D</a></li><li><a href="W3DL.IndexedVertexArray.html">IndexedVertexArray</a></li><li><a href="W3DL.Material.html">Material</a></li><li><a href="W3DL.Matrix.html">Matrix</a></li><li><a href="W3DL.Matrix4.html">Matrix4</a></li><li><a href="W3DL.Object3D.html">Object3D</a></li><li><a href="W3DL.ShaderProgram.html">ShaderProgram</a></li><li><a href="W3DL.Texture2D.html">Texture2D</a></li><li><a href="W3DL.Vector.html">Vector</a></li><li><a href="W3DL.Vector2D.html">Vector2D</a></li><li><a href="W3DL.Vector3D.html">Vector3D</a></li><li><a href="W3DL.Vector4D.html">Vector4D</a></li><li><a href="W3DL.Vertex.html">Vertex</a></li></ul><h3>Namespaces</h3><ul><li><a href="W3DL.html">W3DL</a></li><li><a href="W3DL.Math.html">Math</a></li><li><a href="W3DL.Utils.html">Utils</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Oct 15 2017 15:21:59 GMT-0400 (Eastern Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

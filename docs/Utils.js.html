@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Utils.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Utils.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// jshint esversion: 6
+
+/**
+ * This file defines a namespace for common utility functions and objects to be
+ * used globally from both within and outside of the W3DL API.
+ * @file
+ * @requires {@link W3DL.js}
+ * @see W3DL.Utils
+ */
+
+/**
+ * Common utility functions and objects to be used globally.
+ * @namespace
+ */
+W3DL.Utils = {
+  /**
+   * Checks that an input parameter is an instance of an input type.
+   * @param {function} type The function prototype to compare the argument with.
+   * @param {*} arg The argument to compare wih a given type.
+   * @returns {function} The type that the argument was found to be an instance
+   *          of on success, otherwise, the function will not return and an
+   *          error will be thrown.
+   */
+  CheckArgAgainstType: function(type, arg) {
+    // If the type provided is a function (ie. prototype), then we will compare
+    // the argument provided against that type.
+    // Otherwise, if the type provided is not a function, then a user error is
+    // assumed and an exception is thrown stating that the argument cannot be
+    // checked against the given type.
+    if (typeof type === "function") {
+      if (new arg.constructor() instanceof type) {
+        return type;
+      }
+    } else {
+      throw new TypeError("Cannot check parameter against invalid type: " + typeof type);
+    }
+  },
+
+  /**
+   * Checks a list of arguments against a list of types, matching them by index,
+   * and throwing an error in the case that any argument does not match its
+   * corresponding type.
+   * @param {function[]} types The list of function prototypes to compare the
+   *        the list of arguments with.
+   * @param {arguments} arguments The list of arguments to compare wih a list of
+   *        types. See the mozilla reference for the [arguments object]{@link https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Functions/arguments}.
+   * @param {Number} [requiredArgCount=types.length] The number of arguments
+   *        that are required as input for the function to be executed.
+   */
+  ValidateArguments: function(types, args, requiredArgCount = types.length) {
+    // Check parameters to this function.
+    if (!(types instanceof Array) || !(args instanceof Object) || typeof requiredArgCount !== "number") {
+      throw new Error("Failure to provide valid parameters to ValidateArguments: " +
+        "types(" + types + "), " +
+        "args(" + args + "), " +
+        "requiredArgCount(" + requiredArgCount + ")");
+    }
+
+    // Check the number of parameter types is at least the required amount for the
+    // function.
+    if (types.length &lt; requiredArgCount) {
+      throw new Error("Failure to provide enough types to check all required parameters: " + requiredArgCount + " required but only " + types.length + " given");
+    }
+
+    // Check the number of input parameters is at least the required amount for
+    // the function.
+    if (args.length &lt; requiredArgCount) {
+      throw new Error("Failure to provide all required parameters:  " + requiredArgCount + " required but only " + args.length + " given");
+    }
+
+    // Define local callback for Array.prototype.find for the loop body in case
+    // we have a multi type allowance for an agrument.
+    var argCheck = function(type) {
+      return W3DL.Utils.CheckArgAgainstType(type, this);
+    };
+
+    // Define local callback for Array.prototype.map to get all of the type names
+    // in an array of types.
+    var getTypeName = function(type) {
+      return type.name;
+    };
+
+    // If we get here, we know that we have enough input types as well as input
+    // parameters, so we will iterate through both arrays up to the length of the
+    // shorter one.
+    for (var i = 0; i &lt; Math.min(types.length, args.length); i++) {
+      // If the type provided at the current index is an array (presumably of
+      // types), then we will attempt to find the type in that array with which
+      // the argument at the current index matches. That way, we can allow several
+      // types to satisfy the function for that argument.
+      // Otherwise, if the type provided at the current index is not an array,
+      // then we assume it is a function (a prototype) and attempt to compare the
+      // argument at the current index against it.
+      if (types[i] instanceof Array) {
+        if (types[i].find(argCheck, args[i]) === undefined) {
+          var typenames = types[i].map(getTypeName);
+          throw new TypeError("Invalid parameter " + i + ": expected one of [" + typenames + "] but got " + args[i].constructor.name);
+        }
+      } else {
+        if (W3DL.Utils.CheckArgAgainstType(types[i], args[i]) === undefined) {
+          throw new TypeError("Invalid parameter " + i + ": expected " + types[i].name + " but got " + args[i].constructor.name);
+        }
+      }
+    }
+  }
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="W3DL.ColorRGBA.html">ColorRGBA</a></li><li><a href="W3DL.Colors.html">Colors</a></li><li><a href="W3DL.GraphicsObject3D.html">GraphicsObject3D</a></li><li><a href="W3DL.IndexedVertexArray.html">IndexedVertexArray</a></li><li><a href="W3DL.Material.html">Material</a></li><li><a href="W3DL.Matrix.html">Matrix</a></li><li><a href="W3DL.Matrix4.html">Matrix4</a></li><li><a href="W3DL.Object3D.html">Object3D</a></li><li><a href="W3DL.ShaderProgram.html">ShaderProgram</a></li><li><a href="W3DL.Texture2D.html">Texture2D</a></li><li><a href="W3DL.Vector.html">Vector</a></li><li><a href="W3DL.Vector2D.html">Vector2D</a></li><li><a href="W3DL.Vector3D.html">Vector3D</a></li><li><a href="W3DL.Vector4D.html">Vector4D</a></li><li><a href="W3DL.Vertex.html">Vertex</a></li></ul><h3>Namespaces</h3><ul><li><a href="W3DL.html">W3DL</a></li><li><a href="W3DL.Math.html">Math</a></li><li><a href="W3DL.Utils.html">Utils</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Oct 15 2017 15:21:59 GMT-0400 (Eastern Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
