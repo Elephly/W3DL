@@ -6,7 +6,7 @@ var jsdoc = require("jsdoc-api");
 var os = require("os");
 var path = require("path");
 var rimraf = require("rimraf").sync;
-var uglifyjs = require("uglify-js-harmony");
+var uglifyjs = require("uglify-es");
 
 // Variables
 var args = process.argv.slice(2);
@@ -90,41 +90,47 @@ buildTypes.forEach(function(buildType) {
       } catch (err) {
         console.error("Failed to write to temporary Defines file. " + err);
       }
-      var uglifyResult = uglifyjs.minify(
-        [
-          path.join(projSrcDir, "W3DL.js"), // MUST BE FIRST
-          path.join(projTmpDir, "Defines.js"),
-          path.join(projShaderDir, "color-fragment.js"),
-          path.join(projShaderDir, "color-vertex.js"),
-          path.join(projShaderDir, "gouraud-fragment.js"),
-          path.join(projShaderDir, "gouraud-vertex.js"),
-          path.join(projShaderDir, "phong-fragment.js"),
-          path.join(projShaderDir, "phong-vertex.js"),
-          path.join(projShaderDir, "texture-fragment.js"),
-          path.join(projShaderDir, "texture-vertex.js"),
-          path.join(projShaderDir, "white-vertex.js"),
-          path.join(projSrcDir, "Utils.js"),
-          path.join(projSrcDir, "Math.js"),
-          path.join(projSrcDir, "Color.js"),
-          path.join(projSrcDir, "Vector.js"),
-          path.join(projSrcDir, "Matrix.js"),
-          path.join(projSrcDir, "Vertex.js"),
-          path.join(projSrcDir, "IndexedVertexArray.js"),
-          path.join(projSrcDir, "ShaderProgram.js"),
-          path.join(projSrcDir, "Texture2D.js"),
-          path.join(projSrcDir, "Material.js"),
-          path.join(projSrcDir, "Object3D.js"),
-          path.join(projSrcDir, "GraphicsObject3D.js"),
-          path.join(projSrcDir, "W3DLModule.js") // MUST BE LAST
-        ],
+      var srcFiles = [];
+      srcFiles.push(path.join(projSrcDir, "W3DL.js")); // MUST BE FIRST
+      srcFiles.push(path.join(projTmpDir, "Defines.js"));
+      srcFiles.push(path.join(projShaderDir, "color-fragment.js"));
+      srcFiles.push(path.join(projShaderDir, "color-vertex.js"));
+      srcFiles.push(path.join(projShaderDir, "gouraud-fragment.js"));
+      srcFiles.push(path.join(projShaderDir, "gouraud-vertex.js"));
+      srcFiles.push(path.join(projShaderDir, "phong-fragment.js"));
+      srcFiles.push(path.join(projShaderDir, "phong-vertex.js"));
+      srcFiles.push(path.join(projShaderDir, "texture-fragment.js"));
+      srcFiles.push(path.join(projShaderDir, "texture-vertex.js"));
+      srcFiles.push(path.join(projShaderDir, "white-vertex.js"));
+      srcFiles.push(path.join(projSrcDir, "Utils.js"));
+      srcFiles.push(path.join(projSrcDir, "Math.js"));
+      srcFiles.push(path.join(projSrcDir, "Color.js"));
+      srcFiles.push(path.join(projSrcDir, "Vector.js"));
+      srcFiles.push(path.join(projSrcDir, "Matrix.js"));
+      srcFiles.push(path.join(projSrcDir, "Vertex.js"));
+      srcFiles.push(path.join(projSrcDir, "IndexedVertexArray.js"));
+      srcFiles.push(path.join(projSrcDir, "ShaderProgram.js"));
+      srcFiles.push(path.join(projSrcDir, "Texture2D.js"));
+      srcFiles.push(path.join(projSrcDir, "Material.js"));
+      srcFiles.push(path.join(projSrcDir, "Object3D.js"));
+      srcFiles.push(path.join(projSrcDir, "GraphicsObject3D.js"));
+      srcFiles.push(path.join(projSrcDir, "W3DLModule.js")); // MUST BE LAST
+      var code = {};
+      for (var i = 0; i < srcFiles.length; i++) {
+        code[srcFiles[i]] = fs.readFileSync(srcFiles[i], "utf8");
+      }
+      var uglifyResult = uglifyjs.minify(code,
         {
-          outSourceMap: "w3dl.min.js.map",
-          sourceRoot: "file:///",
+          sourceMap: {
+            filename: "w3dl.min.js",
+            root: "file:///",
+            url: "w3dl.min.js.map",
+          },
           compress: {
             dead_code: true,
             unused: true
           },
-          mangle: true,
+          ecma: 6,
           warnings: true
         }
       );
