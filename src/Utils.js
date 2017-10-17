@@ -28,7 +28,7 @@ W3DL.Utils = {
     // assumed and an exception is thrown stating that the argument cannot be
     // checked against the given type.
     if (typeof type === "function") {
-      if (new arg.constructor() instanceof type) {
+      if (arg.constructor.name === type.name) {
         return type;
       }
     } else {
