@@ -29,6 +29,8 @@ W3DL.Utils = {
     // checked against the given type.
     if (typeof type === "function") {
       switch (typeof arg) {
+        case "array":
+        case "function":
         case "object":
           return arg instanceof type;
         default:
