@@ -182,13 +182,11 @@ buildTypes.forEach(function(buildType) {
       try {
         fs.readdirSync(projDemoDir).forEach(function(file) {
           if (file !== "." && file !== "..") {
-            console.log("Copying " + path.join(projDemoDir, file) + " to " + projDocDir);
             fs.copySync(path.join(projDemoDir, file), path.join(projDocDir, file));
           }
         });
         fs.readdirSync(projBinDir).forEach(function(file) {
           if (file !== "." && file !== "..") {
-            console.log("Copying " + path.join(projBinDir, file) + " to " + path.join(projDocDir, "scripts"));
             fs.copySync(path.join(projBinDir, file), path.join(projDocDir, "scripts", file));
           }
         });

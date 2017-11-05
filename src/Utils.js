@@ -17,9 +17,9 @@ W3DL.Utils = {
    * Checks that an input parameter is an instance of an input type.
    * @param {function} type The function prototype to compare the argument with.
    * @param {*} arg The argument to compare wih a given type.
-   * @returns {function} The type that the argument was found to be an instance
-   *          of on success, otherwise, the function will not return and an
-   *          error will be thrown.
+   * @returns {Boolean} True if the argument is found to be an instance the
+   *          provided type, false otherwise.
+   * @throws {TypeError} Argument type must be a valid type prototype.
    */
   CheckArgAgainstType: function(type, arg) {
     // If the type provided is a function (ie. prototype), then we will compare
@@ -28,8 +28,11 @@ W3DL.Utils = {
     // assumed and an exception is thrown stating that the argument cannot be
     // checked against the given type.
     if (typeof type === "function") {
-      if (arg.constructor.name === type.name) {
-        return type;
+      switch (typeof arg) {
+        case "object":
+          return arg instanceof type;
+        default:
+          return arg.constructor.name === type.name;
       }
     } else {
       throw new TypeError("Cannot check parameter against invalid type: " + typeof type);
@@ -46,6 +49,11 @@ W3DL.Utils = {
    *        types. See the mozilla reference for the [arguments object]{@link https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Functions/arguments}.
    * @param {Number} [requiredArgCount=types.length] The number of arguments
    *        that are required as input for the function to be executed.
+   * @throws {Error} Throws an Error if arguments provided to this
+   *         function are invalid or if the user passes less arguments than
+   *         requiredArgCount.
+   * @throws {TypeError} Throws a TypeError if argument types do not match
+   *         specified types.
    */
   ValidateArguments: function(types, args, requiredArgCount = types.length) {
     // Check parameters to this function.
@@ -92,12 +100,12 @@ W3DL.Utils = {
       // then we assume it is a function (a prototype) and attempt to compare the
       // argument at the current index against it.
       if (types[i] instanceof Array) {
-        if (types[i].find(argCheck, args[i]) === undefined) {
+        if (!types[i].find(argCheck, args[i])) {
           var typenames = types[i].map(getTypeName);
           throw new TypeError("Invalid parameter " + i + ": expected one of [" + typenames + "] but got " + args[i].constructor.name);
         }
       } else {
-        if (W3DL.Utils.CheckArgAgainstType(types[i], args[i]) === undefined) {
+        if (!W3DL.Utils.CheckArgAgainstType(types[i], args[i])) {
           throw new TypeError("Invalid parameter " + i + ": expected " + types[i].name + " but got " + args[i].constructor.name);
         }
       }
