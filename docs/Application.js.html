@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Application.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Application.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// jshint esversion: 6
+
+/**
+ * This file defines the base class for a W3DL application.
+ * @file
+ * @requires {@link Utils.js}
+ * @see W3DL.Application
+ */
+
+/**
+ * A class to represent a W3DL application, containing the main update and draw
+ * functions as well as handling the WebGL context directly. This class should
+ * be derived from to form the main application class in any user application.
+ * @class
+ * @abstract
+ */
+W3DL.Application = class Application {
+  /**
+   * @param {HTMLCanvasElement} canvas The DOM canvas from which to take the
+            WebGL context.
+   */
+  constructor(canvas) {
+    DEBUG &amp;&amp; W3DL.Utils.ValidateArguments([HTMLCanvasElement], arguments); // jshint ignore:line
+    if (new.target === W3DL.Application) {
+      throw new TypeError("Cannot construct instances of abstract class: " + new.target.name);
+    }
+
+    /**
+     * The WebGL context retrieved from the input canvas object.
+     * @type {WebGLRenderingContext}
+     */
+    this.gl = canvas.getContext("webgl");
+
+    if (!this.gl) {
+      console.warn("webgl not supported. Falling back on experimental-webgl.");
+      this.gl = canvas.getContext("experimental-webgl");
+    }
+
+    if (!this.gl) {
+      alert("Your browser does not support WebGL.");
+      throw new Error("Browser does not support WebGL.");
+    }
+
+    /**
+     * Flag indicating whether or not the initialize function has run yet
+     * @type {Boolean}
+     */
+    this.isInitialized = false;
+
+    /**
+     * The time associated with the most recent call to the update function.
+     * @type {DOMHighResTimeStamp}
+     */
+    this.lastUpdateTime = 0;
+
+    this.dispatchInitialize();
+    this.dispatchUpdate(true);
+    this.dispatchDraw(true);
+  }
+
+  /**
+   * Dispatches the application's initialize function if one exists.
+   */
+  dispatchInitialize() {
+    setTimeout(function(app) {
+      if (app.initialize) {
+        app.initialize();
+      }
+      app.isInitialized = true;
+    }, 0, this);
+  }
+
+  /**
+   * Dispatches the application's update function if one exists, reregisters it
+   * to be called after another 16 milliseconds, and updates the lastUpdateTime
+   * variable.
+   */
+  dispatchUpdate(initialize) {
+    DEBUG &amp;&amp; W3DL.Utils.ValidateArguments([Boolean], arguments, 0); // jshint ignore:line
+    let previousUpdateTime = this.lastUpdateTime;
+    this.lastUpdateTime = performance.now();
+    if (this.isInitialized &amp;&amp; this.update &amp;&amp; !initialize) {
+      this.update(this.lastUpdateTime - previousUpdateTime);
+    }
+    setTimeout(function(app) {app.dispatchUpdate();}, 16, this);
+  }
+
+  /**
+   * Dispatches the application's draw function if one exists and reregisters it
+   * for the next animation frame.
+   */
+  dispatchDraw(initialize) {
+    DEBUG &amp;&amp; W3DL.Utils.ValidateArguments([Boolean], arguments, 0); // jshint ignore:line
+    if (this.isInitialized &amp;&amp; this.draw &amp;&amp; !initialize) {
+      this.draw();
+    }
+    requestAnimationFrame(function(app) {return function() {app.dispatchDraw();};}(this));
+  }
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="W3DL.Application.html">Application</a></li><li><a href="W3DL.ColorRGBA.html">ColorRGBA</a></li><li><a href="W3DL.Colors.html">Colors</a></li><li><a href="W3DL.GraphicsObject3D.html">GraphicsObject3D</a></li><li><a href="W3DL.IndexedVertexArray.html">IndexedVertexArray</a></li><li><a href="W3DL.Material.html">Material</a></li><li><a href="W3DL.Matrix.html">Matrix</a></li><li><a href="W3DL.Matrix4.html">Matrix4</a></li><li><a href="W3DL.Object3D.html">Object3D</a></li><li><a href="W3DL.ShaderProgram.html">ShaderProgram</a></li><li><a href="W3DL.Texture2D.html">Texture2D</a></li><li><a href="W3DL.Vector.html">Vector</a></li><li><a href="W3DL.Vector2D.html">Vector2D</a></li><li><a href="W3DL.Vector3D.html">Vector3D</a></li><li><a href="W3DL.Vector4D.html">Vector4D</a></li><li><a href="W3DL.Vertex.html">Vertex</a></li></ul><h3>Namespaces</h3><ul><li><a href="W3DL.html">W3DL</a></li><li><a href="W3DL.Math.html">Math</a></li><li><a href="W3DL.Utils.html">Utils</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Nov 05 2017 08:18:30 GMT-0500 (Eastern Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

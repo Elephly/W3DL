@@ -3,6 +3,7 @@
 /**
  * This file defines classes for color objects and common color instances.
  * @file
+ * @requires {@link Vector.js}
  * @requires {@link Utils.js}
  * @see W3DL.ColorRGBA
  * @see W3DL.Colors
@@ -67,6 +68,24 @@ W3DL.ColorRGBA = class ColorRGBA {
    */
   get toFloat32Array() {
     return new Float32Array(this.toArray);
+  }
+
+  /**
+   * Returns the color object converted into a W3DL.Vector3D with values for
+   * red, green, and blue as x, y, and z respectively, omitting the alpha value.
+   * @type {W3DL.Vector3D}
+   */
+  get toVector3D() {
+    return new W3DL.Vector3D(this.red, this.green, this.blue);
+  }
+
+  /**
+   * Returns the color object converted into a W3DL.Vector4D with values for
+   * red, green, blue, and alpha as x, y, z, and w respectively.
+   * @type {W3DL.Vector4D}
+   */
+  get toVector4D() {
+    return new W3DL.Vector4D(this.red, this.green, this.blue, this.alpha);
   }
 };
 

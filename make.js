@@ -1,11 +1,12 @@
 #!/usr/bin/node
 
+// jshint esversion: 6
+
 // Required node modules
-var fs = require("fs");
+var fs = require("fs-extra");
 var jsdoc = require("jsdoc-api");
 var os = require("os");
 var path = require("path");
-var rimraf = require("rimraf").sync;
 var uglifyjs = require("uglify-es");
 
 // Variables
@@ -14,6 +15,7 @@ var delim = (os.type() === "Windows_NT" ? "\\" : "/");
 
 var projRootDir = process.cwd();
 var projBinDir = path.join(projRootDir, "bin");
+var projDemoDir = path.join(projRootDir, "demo");
 var projDocDir = path.join(projRootDir, "docs");
 var projShaderDir = path.join(projRootDir, "shaders");
 var projSrcDir = path.join(projRootDir, "src");
@@ -34,8 +36,8 @@ var defineStrings = {
 
 var availableBuildTypes = {
   array: ["w3dl", "docs"],
-  w3dl:  function() { return this.array[0]; },
-  docs: function() { return this.array[1]; }
+  get w3dl() { return this.array[0]; },
+  get docs() { return this.array[1]; }
 };
 
 // Parse arguments
@@ -63,19 +65,30 @@ args.forEach(function(arg) {
 });
 
 if (buildTypes.length < 1) {
-  buildTypes.push(availableBuildTypes.w3dl());
+  buildTypes.push(availableBuildTypes.w3dl);
 }
 
-rimraf(projTmpDir);
+if (!clean && buildTypes.includes(availableBuildTypes.docs)) {
+  buildTypes = buildTypes.filter(function(type) {
+    return type !== availableBuildTypes.w3dl;
+  });
+  buildTypes = [availableBuildTypes.w3dl].concat(buildTypes);
+}
+
+try {
+  fs.removeSync(projTmpDir);
+} catch (err) {
+  console.error("Failed to remove temporary build directory. " + err);
+}
 
 buildTypes.forEach(function(buildType) {
   var currentBuild = buildType.toUpperCase();
   console.log((clean ? "Cleaning " : "Building ") + currentBuild + "...");
   fs.mkdirSync(projTmpDir);
-  if (buildType === availableBuildTypes.w3dl()) {
+  if (buildType === availableBuildTypes.w3dl) {
     if (clean) {
       try {
-        rimraf(projBinDir);
+        fs.removeSync(projBinDir);
       } catch (err) {
         console.error("Failed to remove bin directory. " + err);
       }
@@ -103,6 +116,7 @@ buildTypes.forEach(function(buildType) {
       srcFiles.push(path.join(projShaderDir, "texture-vertex.js"));
       srcFiles.push(path.join(projShaderDir, "white-vertex.js"));
       srcFiles.push(path.join(projSrcDir, "Utils.js"));
+      srcFiles.push(path.join(projSrcDir, "Application.js"));
       srcFiles.push(path.join(projSrcDir, "Math.js"));
       srcFiles.push(path.join(projSrcDir, "Color.js"));
       srcFiles.push(path.join(projSrcDir, "Vector.js"));
@@ -145,10 +159,10 @@ buildTypes.forEach(function(buildType) {
         console.error("Failed to save " + outFileMap + ". " + err);
       }
     }
-  } else if (buildType === availableBuildTypes.docs()) {
+  } else if (buildType === availableBuildTypes.docs) {
     if (clean) {
       try {
-        rimraf(projDocDir);
+        fs.removeSync(projDocDir);
       } catch (err) {
         console.error("Failed to remove docs directory. " + err);
       }
@@ -165,13 +179,29 @@ buildTypes.forEach(function(buildType) {
       } catch (err) {
         console.error("Failed to build docs. " + err);
       }
+      try {
+        fs.readdirSync(projDemoDir).forEach(function(file) {
+          if (file !== "." && file !== "..") {
+            console.log("Copying " + path.join(projDemoDir, file) + " to " + projDocDir);
+            fs.copySync(path.join(projDemoDir, file), path.join(projDocDir, file));
+          }
+        });
+        fs.readdirSync(projBinDir).forEach(function(file) {
+          if (file !== "." && file !== "..") {
+            console.log("Copying " + path.join(projBinDir, file) + " to " + path.join(projDocDir, "scripts"));
+            fs.copySync(path.join(projBinDir, file), path.join(projDocDir, "scripts", file));
+          }
+        });
+      } catch(err) {
+        console.error("Failed to copy demo files to docs directory. " + err);
+      }
     }
   } else {
     console.error("Invalid build target attempt: " + buildType + ".");
     return;
   }
   try {
-    rimraf(projTmpDir);
+    fs.removeSync(projTmpDir);
   } catch (err) {
     console.error("Failed to remove temporary build directory. " + err);
   }

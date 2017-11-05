@@ -59,9 +59,9 @@ W3DL.GraphicsObject3D = class GraphicsObject3D extends W3DL.Object3D {
       /* TODO: This is a hack and should be removed. */
       this.children.forEach(function(child) {
         if (recursiveVAO) {
-          ((W3DL.GraphicsObject3D)(child)).initialize(shader, material, recursive, vertexArray, recursiveVAO);
+          (/*(W3DL.GraphicsObject3D)*/(child)).initialize(shader, material, recursive, vertexArray, recursiveVAO);
         } else {
-          ((W3DL.GraphicsObject3D)(child)).initialize(shader, material, recursive);
+          (/*(W3DL.GraphicsObject3D)*/(child)).initialize(shader, material, recursive);
         }
       });
       this.shaderProgram = shader;
@@ -70,18 +70,42 @@ W3DL.GraphicsObject3D = class GraphicsObject3D extends W3DL.Object3D {
     }
   }
 
-  draw(parentTransformation = W3DL.Matrix4.IdentityMatrix()) {
-    DEBUG &amp;&amp; W3DL.Utils.ValidateArguments([W3DL.Matrix4], arguments, 0); // jshint ignore:line
+  draw(gl, parentTransformation = W3DL.Matrix4.Identity()) {
+    DEBUG &amp;&amp; W3DL.Utils.ValidateArguments([WebGLRenderingContext, W3DL.Matrix4], arguments, 1); // jshint ignore:line
     super.draw(parentTransformation);
     if (this.shaderProgram) {
-      /** @todo draw implementation */
+      gl.useProgram(this.shaderProgram.id);
+
+      this.shaderProgram.bindUniformMatrix(gl, "transform", this.transformation);
+      this.shaderProgram.bindUniformVector(gl, "ambient", this.objectMaterial.ambient.toVector4D);
+      this.shaderProgram.bindUniformVector(gl, "diffuse", this.objectMaterial.diffuse.toVector4D);
+      this.shaderProgram.bindUniformVector(gl, "specular", this.objectMaterial.specular.toVector4D);
+      this.shaderProgram.bindUniformFloat(gl, "shine", this.objectMaterial.shine);
+      this.shaderProgram.bindUniformFloat(gl, "toon", this.objectMaterial.toon);
+
+      if (this.objectMaterial.texture) {
+        gl.activeTexture(this.objectMaterial.texture.unit);
+        gl.bindTexture(gl.TEXTURE_2D, this.objectMaterial.texture.id);
+        this.shaderProgram.bindUniformInt(gl, "textureSampler", this.objectMaterial.texture.unit);
+        this.shaderProgram.bindUniformFloat(gl, "hasTexture", 1.0);
+      } else {
+        this.shaderProgram.bindUniformFloat(gl, "hasTexture", 0.0);
+      }
+
+      if (this.vertices &amp;&amp; this.vertices.vertexArrayObject)
+      {
+        gl.bindVertexArray(this.vertices.vertexArrayObject);
+        //gl.drawArraysInstancedARB(gl.TRIANGLES, 0, this.vertices.vertices.length, 1);
+        gl.drawArrays(gl.TRIANGLES, 0, this.vertices.vertices.length);
+        gl.bindVertexArray(0);
+      }
     }
   }
 
   setInheritedShader(shader) {
     DEBUG &amp;&amp; W3DL.Utils.ValidateArguments([W3DL.ShaderProgram], arguments); // jshint ignore:line
     this.children.forEach(function(child) {
-      ((W3DL.GraphicsObject3D)(child)).setInheritedShader(shader);
+      (/*(W3DL.GraphicsObject3D)*/(child)).setInheritedShader(shader);
     });
     this.shaderProgram = shader;
   }
@@ -89,7 +113,7 @@ W3DL.GraphicsObject3D = class GraphicsObject3D extends W3DL.Object3D {
   setInheritedMaterial(material) {
     DEBUG &amp;&amp; W3DL.Utils.ValidateArguments([W3DL.Material], arguments); // jshint ignore:line
     this.children.forEach(function(child) {
-      ((W3DL.GraphicsObject3D)(child)).setInheritedMaterial(material);
+      (/*(W3DL.GraphicsObject3D)*/(child)).setInheritedMaterial(material);
     });
     this.objectMaterial = material;
   }
@@ -104,13 +128,13 @@ W3DL.GraphicsObject3D = class GraphicsObject3D extends W3DL.Object3D {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="W3DL.ColorRGBA.html">ColorRGBA</a></li><li><a href="W3DL.Colors.html">Colors</a></li><li><a href="W3DL.GraphicsObject3D.html">GraphicsObject3D</a></li><li><a href="W3DL.IndexedVertexArray.html">IndexedVertexArray</a></li><li><a href="W3DL.Material.html">Material</a></li><li><a href="W3DL.Matrix.html">Matrix</a></li><li><a href="W3DL.Matrix4.html">Matrix4</a></li><li><a href="W3DL.Object3D.html">Object3D</a></li><li><a href="W3DL.ShaderProgram.html">ShaderProgram</a></li><li><a href="W3DL.Texture2D.html">Texture2D</a></li><li><a href="W3DL.Vector.html">Vector</a></li><li><a href="W3DL.Vector2D.html">Vector2D</a></li><li><a href="W3DL.Vector3D.html">Vector3D</a></li><li><a href="W3DL.Vector4D.html">Vector4D</a></li><li><a href="W3DL.Vertex.html">Vertex</a></li></ul><h3>Namespaces</h3><ul><li><a href="W3DL.html">W3DL</a></li><li><a href="W3DL.Math.html">Math</a></li><li><a href="W3DL.Utils.html">Utils</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="W3DL.Application.html">Application</a></li><li><a href="W3DL.ColorRGBA.html">ColorRGBA</a></li><li><a href="W3DL.Colors.html">Colors</a></li><li><a href="W3DL.GraphicsObject3D.html">GraphicsObject3D</a></li><li><a href="W3DL.IndexedVertexArray.html">IndexedVertexArray</a></li><li><a href="W3DL.Material.html">Material</a></li><li><a href="W3DL.Matrix.html">Matrix</a></li><li><a href="W3DL.Matrix4.html">Matrix4</a></li><li><a href="W3DL.Object3D.html">Object3D</a></li><li><a href="W3DL.ShaderProgram.html">ShaderProgram</a></li><li><a href="W3DL.Texture2D.html">Texture2D</a></li><li><a href="W3DL.Vector.html">Vector</a></li><li><a href="W3DL.Vector2D.html">Vector2D</a></li><li><a href="W3DL.Vector3D.html">Vector3D</a></li><li><a href="W3DL.Vector4D.html">Vector4D</a></li><li><a href="W3DL.Vertex.html">Vertex</a></li></ul><h3>Namespaces</h3><ul><li><a href="W3DL.html">W3DL</a></li><li><a href="W3DL.Math.html">Math</a></li><li><a href="W3DL.Utils.html">Utils</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Oct 15 2017 15:21:59 GMT-0400 (Eastern Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Nov 05 2017 08:18:30 GMT-0500 (Eastern Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

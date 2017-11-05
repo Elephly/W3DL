@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" style="width: 100%; height: 100%; margin: 0px;">
+<head>
+  <meta charset="utf-8">
+  <title>W3DL Demo</title>
+</head>
+
+<body style="width: 100%; min-height: 100%; margin: 0px; overflow: hidden;">
+  <canvas id="game" style="display: block;">Your browser does not support HTML5.</canvas>
+
+  <img id="crate-image" style="visibility: hidden; max-width: 0; max-height: 0;" src="images/crate.png">
+
+  <script src="scripts/w3dl.min.js"></script>
+  <script>
+  var game;
+
+  class Game extends W3DL.Application {
+    constructor(canvas) {
+      super(canvas);
+
+      this.textureShader = new W3DL.ShaderProgram(textureVertexShaderText, textureFragmentShaderText);
+      this.textureShader.initialize(this.gl);
+    }
+    initialize() {
+      this.gl.clearColor(W3DL.Colors.CornflowerBlue.red, W3DL.Colors.CornflowerBlue.green, W3DL.Colors.CornflowerBlue.blue, W3DL.Colors.CornflowerBlue.alpha);
+      this.gl.enable(this.gl.DEPTH_TEST);
+      this.gl.enable(this.gl.CULL_FACE);
+      this.gl.frontFace(this.gl.CCW);
+      this.gl.cullFace(this.gl.BACK);
+    }
+    update(deltaTime) {
+      // todo
+    }
+    draw() {
+      // todo
+    }
+  };
+
+  var resizeCanvas = function() {
+    if (game && game.gl) {
+      game.gl.canvas.width = window.innerWidth;
+      game.gl.canvas.height = window.innerHeight;
+      game.gl.viewport(0, 0, game.gl.canvas.width, game.gl.canvas.height);
+      let aspectRatio = game.gl.canvas.width / game.gl.canvas.height;
+      game.textureShader.bindUniformMatrix(game.gl, "mProj", W3DL.Matrix4.SymmetricPerspectiveProjection(45, aspectRatio, 0.1, 1000));
+    }
+  }
+
+  var main = function() {
+    // Get WebGL context
+    game = new Game(document.getElementById("game"));
+
+    // Resize canvas
+    resizeCanvas();
+
+    // Create buffer
+    var boxVertices =
+      // Top
+      new W3DL.Vertex(new W3DL.Vector3D(-1.0,  1.0, -1.0), new W3DL.ColorRGBA(), new W3DL.Vector2D(0.0,  0.0)).toArray.concat(
+      new W3DL.Vertex(new W3DL.Vector3D(-1.0,  1.0,  1.0), new W3DL.ColorRGBA(), new W3DL.Vector2D(0.0,  1.0)).toArray).concat(
+      new W3DL.Vertex(new W3DL.Vector3D(1.0,  1.0,  1.0), new W3DL.ColorRGBA(), new W3DL.Vector2D(1.0,  1.0)).toArray).concat(
+      new W3DL.Vertex(new W3DL.Vector3D(1.0,  1.0, -1.0), new W3DL.ColorRGBA(), new W3DL.Vector2D(1.0,  0.0)).toArray).concat(
+      // Left
+      new W3DL.Vertex(new W3DL.Vector3D(-1.0,  1.0,  1.0), new W3DL.ColorRGBA(), new W3DL.Vector2D(1.0,  1.0)).toArray).concat(
+      new W3DL.Vertex(new W3DL.Vector3D(-1.0, -1.0,  1.0), new W3DL.ColorRGBA(), new W3DL.Vector2D(0.0,  1.0)).toArray).concat(
+      new W3DL.Vertex(new W3DL.Vector3D(-1.0, -1.0, -1.0), new W3DL.ColorRGBA(), new W3DL.Vector2D(0.0,  0.0)).toArray).concat(
+      new W3DL.Vertex(new W3DL.Vector3D(-1.0,  1.0, -1.0), new W3DL.ColorRGBA(), new W3DL.Vector2D(1.0,  0.0)).toArray).concat(
+      // Right
+      new W3DL.Vertex(new W3DL.Vector3D(1.0,  1.0,  1.0), new W3DL.ColorRGBA(), new W3DL.Vector2D(1.0,  1.0)).toArray).concat(
+      new W3DL.Vertex(new W3DL.Vector3D(1.0, -1.0,  1.0), new W3DL.ColorRGBA(), new W3DL.Vector2D(0.0,  1.0)).toArray).concat(
+      new W3DL.Vertex(new W3DL.Vector3D(1.0, -1.0, -1.0), new W3DL.ColorRGBA(), new W3DL.Vector2D(0.0,  0.0)).toArray).concat(
+      new W3DL.Vertex(new W3DL.Vector3D(1.0,  1.0, -1.0), new W3DL.ColorRGBA(), new W3DL.Vector2D(1.0,  0.0)).toArray).concat(
+      // Front
+      new W3DL.Vertex(new W3DL.Vector3D(1.0,  1.0,  1.0), new W3DL.ColorRGBA(), new W3DL.Vector2D(1.0,  1.0)).toArray).concat(
+      new W3DL.Vertex(new W3DL.Vector3D(1.0, -1.0,  1.0), new W3DL.ColorRGBA(), new W3DL.Vector2D(1.0,  0.0)).toArray).concat(
+      new W3DL.Vertex(new W3DL.Vector3D(-1.0, -1.0,  1.0), new W3DL.ColorRGBA(), new W3DL.Vector2D(0.0,  0.0)).toArray).concat(
+      new W3DL.Vertex(new W3DL.Vector3D(-1.0,  1.0,  1.0), new W3DL.ColorRGBA(), new W3DL.Vector2D(0.0,  1.0)).toArray).concat(
+      // Back
+      new W3DL.Vertex(new W3DL.Vector3D(1.0,  1.0, -1.0), new W3DL.ColorRGBA(), new W3DL.Vector2D(1.0,  1.0)).toArray).concat(
+      new W3DL.Vertex(new W3DL.Vector3D(1.0, -1.0, -1.0), new W3DL.ColorRGBA(), new W3DL.Vector2D(1.0,  0.0)).toArray).concat(
+      new W3DL.Vertex(new W3DL.Vector3D(-1.0, -1.0, -1.0), new W3DL.ColorRGBA(), new W3DL.Vector2D(0.0,  0.0)).toArray).concat(
+      new W3DL.Vertex(new W3DL.Vector3D(-1.0,  1.0, -1.0), new W3DL.ColorRGBA(), new W3DL.Vector2D(0.0,  1.0)).toArray).concat(
+      // Bottom
+      new W3DL.Vertex(new W3DL.Vector3D(-1.0, -1.0, -1.0), new W3DL.ColorRGBA(), new W3DL.Vector2D(0.0,  0.0)).toArray).concat(
+      new W3DL.Vertex(new W3DL.Vector3D(-1.0, -1.0,  1.0), new W3DL.ColorRGBA(), new W3DL.Vector2D(0.0,  1.0)).toArray).concat(
+      new W3DL.Vertex(new W3DL.Vector3D(1.0, -1.0,  1.0), new W3DL.ColorRGBA(), new W3DL.Vector2D(1.0,  1.0)).toArray).concat(
+      new W3DL.Vertex(new W3DL.Vector3D(1.0, -1.0, -1.0), new W3DL.ColorRGBA(), new W3DL.Vector2D(1.0,  0.0)).toArray);
+
+    var boxIndices =
+    [
+      // Top
+      0, 1, 2,
+      0, 2, 3,
+      // Left
+      5, 4, 6,
+      6, 4, 7,
+      // Right
+      8, 9, 10,
+      8, 10, 11,
+      // Front
+      13, 12, 14,
+      15, 14, 12,
+      // Back
+      16, 17, 18,
+      16, 18, 19,
+      // Bottom
+      21, 20, 22,
+      22, 20, 23
+    ];
+
+    var boxVertexBufferObject = game.gl.createBuffer();
+    game.gl.bindBuffer(game.gl.ARRAY_BUFFER, boxVertexBufferObject);
+    game.gl.bufferData(game.gl.ARRAY_BUFFER, new Float32Array(boxVertices), game.gl.STATIC_DRAW);
+
+    var boxIndexBufferObject = game.gl.createBuffer();
+    game.gl.bindBuffer(game.gl.ELEMENT_ARRAY_BUFFER, boxIndexBufferObject);
+    game.gl.bufferData(game.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(boxIndices), game.gl.STATIC_DRAW);
+
+    var positionAttribLocation = game.gl.getAttribLocation(game.textureShader.id, "vertPosition");
+    var texCoordAttribLocation = game.gl.getAttribLocation(game.textureShader.id, "vertTexCoord");
+    game.gl.vertexAttribPointer(positionAttribLocation, 3, game.gl.FLOAT, game.gl.FALSE, 13 * Float32Array.BYTES_PER_ELEMENT, 0);
+    game.gl.vertexAttribPointer(texCoordAttribLocation, 2, game.gl.FLOAT, game.gl.FALSE, 13 * Float32Array.BYTES_PER_ELEMENT, 7 * Float32Array.BYTES_PER_ELEMENT);
+
+    game.gl.enableVertexAttribArray(positionAttribLocation);
+    game.gl.enableVertexAttribArray(texCoordAttribLocation);
+
+    // Create texture
+    let crateTexture = new W3DL.Texture2D(document.getElementById("crate-image"));
+    crateTexture.initialize(game.gl);
+
+    game.gl.useProgram(game.textureShader.id);
+
+    game.textureShader.bindUniformMatrix(game.gl, "mWorld", W3DL.Matrix4.Identity());
+    game.textureShader.bindUniformMatrix(game.gl, "mView", W3DL.Matrix4.Camera(new W3DL.Vector3D(0, 0, -5), new W3DL.Vector3D(0, 0, 0), new W3DL.Vector3D(0, 1, 0)));
+
+    // Main render loop
+    var angle = 0;
+    var loop = function() {
+      angle = performance.now() / 1000 / 6 * 2 * Math.PI;
+      let xRotationMatrix = W3DL.Matrix4.RotationAboutX(angle / 4, false);
+      let yRotationMatrix = W3DL.Matrix4.RotationAboutY(angle, false);
+      game.textureShader.bindUniformMatrix(game.gl, "mWorld", yRotationMatrix.matrixMultiply(xRotationMatrix));
+
+      game.gl.clear(game.gl.COLOR_BUFFER_BIT | game.gl.DEPTH_BUFFER_BIT);
+
+      game.gl.bindTexture(game.gl.TEXTURE_2D, crateTexture.id);
+      game.gl.activeTexture(crateTexture.unit);
+      game.gl.drawElements(game.gl.TRIANGLES, boxIndices.length, game.gl.UNSIGNED_SHORT, 0);
+
+      game.gl.bindTexture(game.gl.TEXTURE_2D, null);
+      requestAnimationFrame(loop);
+    };
+    requestAnimationFrame(loop);
+  };
+  window.addEventListener("load", main, true);
+  window.addEventListener("resize", resizeCanvas, true);
+  </script>
+</body>
+</html>

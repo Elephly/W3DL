@@ -1,11 +1,11 @@
-var colorFragmentShaderText =
-[
-"#version 400",
-"",
-"varying vec4 vColor;",
-"",
-"void main(void)",
-"{",
-"  gl_FragColor = vColor;",
-"}",
-].join("\n");
+// jshint esversion: 6
+
+let colorFragmentShaderText =
+`#version 400",
+
+varying vec4 vColor;
+
+void main(void)
+{
+  gl_FragColor = vColor;
+}`;

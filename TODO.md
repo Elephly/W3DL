@@ -25,7 +25,7 @@
 - [ ] MyObjectManager.h
 - [ ] ~~MyQuad.h~~
 - [ ] MyShaderManager.h
-- [ ] MyShaderProgram.h
+- [x] MyShaderProgram.h -> `ShaderProgram.js`
 - [ ] ~~MySphere.h~~
 - [ ] MyStringUtil.h
 - [ ] MyTexture2D.h
@@ -58,7 +58,7 @@
 - [x] MyObject3D.cpp -> `Object3D.js`
 - [ ] ~~MyQuad.cpp~~
 - [ ] MyShaderManager.cpp
-- [ ] MyShaderProgram.cpp
+- [x] MyShaderProgram.cpp `ShaderProgram.js`
 - [ ] ~~MySphere.cpp~~
 - [ ] MyStringUtil.cpp
 - [ ] MyTexture2D.cpp

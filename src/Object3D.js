@@ -20,7 +20,7 @@ W3DL.Object3D = class Object3D {
     this.position = initialPosition;
     this.scale = initialScale;
     this.rotation = initialRotation;
-    this.transformation = W3DL.Matrix4.IdentityMatrix();
+    this.transformation = W3DL.Matrix4.Identity();
     this.children = [];
   }
 
@@ -31,17 +31,17 @@ W3DL.Object3D = class Object3D {
     });
   }
 
-  draw(parentTransformation = W3DL.Matrix4.IdentityMatrix()) {
+  draw(parentTransformation = W3DL.Matrix4.Identity()) {
     DEBUG && W3DL.Utils.ValidateArguments([W3DL.Matrix4], arguments, 0); // jshint ignore:line
     // Scale is not passed onto children
-    this.transformation = parentTransformation.multiply(W3DL.Matrix4.TranslationMatrix(this.position.x, this.position.y, this.position.z)).
-      multiply(W3DL.Matrix4.RollPitchYawRotationMatrix(this.rotation.z, this.rotation.x, this.rotation.y));
+    this.transformation = parentTransformation.multiply(W3DL.Matrix4.Translation(this.position.x, this.position.y, this.position.z)).
+      multiply(W3DL.Matrix4.RollPitchYawRotation(this.rotation.z, this.rotation.x, this.rotation.y));
 
       this.children.forEach(function(child) {
         child.draw(this.transformation);
       });
 
-    this.transformation = this.transformation.multiply(W3DL.Matrix4.ScaleMatrix(this.scale.x, this.scale.y, this.scale.z));
+    this.transformation = this.transformation.multiply(W3DL.Matrix4.Scale(this.scale.x, this.scale.y, this.scale.z));
   }
 
   rotate(x, y, z, isDegree = true) {

@@ -38,7 +38,7 @@ W3DL.Matrix = class Matrix {
    * Returns a matrix with the value 0 in each entry.
    * @returns {W3DL.Matrix} The null matrix object.
    */
-  static NullMatrix() {
+  static Null() {
     return new this();
   }
 
@@ -48,7 +48,7 @@ W3DL.Matrix = class Matrix {
    * the matrix, respectively.
    * @returns {W3DL.Matrix} The zero matrix object.
    */
-  static ZeroMatrix() {
+  static Zero() {
     var matrix = new this();
     var m = matrix.entries.length;
     var n = matrix.entries[m - 1].length;
@@ -62,7 +62,7 @@ W3DL.Matrix = class Matrix {
    * matrix less than both the maximum number of columns and rows.
    * @returns {W3DL.Matrix} The identity matrix object.
    */
-  static IdentityMatrix() {
+  static Identity() {
     var matrix = new this();
     for (var i = 0; i < matrix.entries.length; i++) {
       if (matrix.entries[i] === undefined || matrix.entries[i][i] === undefined) {
@@ -184,6 +184,28 @@ W3DL.Matrix = class Matrix {
     });
     return str;
   }
+
+  /**
+   * Constructs a one dimensional array of the entries of the matrix called on.
+   * @returns {Number[]} An array of entries of the matrix called on.
+   */
+  get toArray() {
+    let arr = [];
+    for (let y = 0; y < this.entries[0].length; y++) {
+      for (let x = 0; x < this.entries.length; x++) {
+        arr.push(this.entries[x][y]);
+      }
+    }
+    return arr;
+  }
+
+  /**
+   * Constructs a Float32Array of the entries of the matrix called on.
+   * @returns {Float32Array} A Float32Array of entries of the matrix called on.
+   */
+  get toFloat32Array() {
+    return new Float32Array(this.toArray);
+  }
 };
 
 /**
@@ -206,11 +228,11 @@ W3DL.Matrix4 = class Matrix4 extends W3DL.Matrix {
          0       0       0       1
   where a = angle.
   */
-  static RotationAboutXMatrix(angle, isDegree = true) {
+  static RotationAboutX(angle, isDegree = true) {
     DEBUG && W3DL.Utils.ValidateArguments([Number, Boolean], arguments, 1); // jshint ignore:line
     var a = (isDegree ? W3DL.Math.DegreeToRadian(angle) : angle);
 
-    var matrix = W3DL.Matrix4.IdentityMatrix();
+    var matrix = W3DL.Matrix4.Identity();
     matrix.entries[1][1] = matrix.entries[2][2] = Math.cos(a);
     matrix.entries[1][2] = -(matrix.entries[2][1] = Math.sin(a));
 
@@ -225,11 +247,11 @@ W3DL.Matrix4 = class Matrix4 extends W3DL.Matrix {
          0       0       0       1
   where a = angle.
   */
-  static RotationAboutYMatrix(angle, isDegree = true) {
+  static RotationAboutY(angle, isDegree = true) {
     DEBUG && W3DL.Utils.ValidateArguments([Number, Boolean], arguments, 1); // jshint ignore:line
     var a = (isDegree ? W3DL.Math.DegreeToRadian(angle) : angle);
 
-    var matrix = W3DL.Matrix4.IdentityMatrix();
+    var matrix = W3DL.Matrix4.Identity();
     matrix.entries[0][0] = matrix.entries[2][2] = Math.cos(a);
     matrix.entries[0][2] = -(matrix.entries[2][0] = -Math.sin(a));
 
@@ -244,25 +266,25 @@ W3DL.Matrix4 = class Matrix4 extends W3DL.Matrix {
          0       0       0       1
   where a = angle.
   */
-  static RotationAboutZMatrix(angle, isDegree = true) {
+  static RotationAboutZ(angle, isDegree = true) {
     DEBUG && W3DL.Utils.ValidateArguments([Number, Boolean], arguments, 1); // jshint ignore:line
     var a = (isDegree ? W3DL.Math.DegreeToRadian(angle) : angle);
 
-    var matrix = W3DL.Matrix4.IdentityMatrix();
+    var matrix = W3DL.Matrix4.Identity();
     matrix.entries[0][0] = matrix.entries[1][1] = Math.cos(a);
     matrix.entries[0][1] = -(matrix.entries[1][0] = Math.sin(a));
 
     return matrix;
   }
 
-  static RollPitchYawRotationMatrix(roll, pitch, yaw, isDegree = true) {
+  static RollPitchYawRotation(roll, pitch, yaw, isDegree = true) {
     DEBUG && W3DL.Utils.ValidateArguments([Number, Number, Number, Boolean], arguments, 3); // jshint ignore:line
-    return (this.RotationAboutYMatrix(yaw, isDegree).matrixMultiply(
-      this.RotationAboutXMatrix(pitch, isDegree)).matrixMultiply(
-        this.RotationAboutZMatrix(roll, isDegree)));
+    return (this.RotationAboutY(yaw, isDegree).matrixMultiply(
+      this.RotationAboutX(pitch, isDegree)).matrixMultiply(
+        this.RotationAboutZ(roll, isDegree)));
   }
 
-  static RotationAboutVectorAxisMatrix(vector, angle, isDegree = true) {
+  static RotationAboutVectorAxis(vector, angle, isDegree = true) {
     DEBUG && W3DL.Utils.ValidateArguments([[W3DL.Vector3D, W3DL.Vector4D], Number, Boolean], arguments, 2); // jshint ignore:line
     var a = (isDegree ? W3DL.Math.DegreeToRadian(angle) : angle);
     var v = vector.normalized();
@@ -279,29 +301,29 @@ W3DL.Matrix4 = class Matrix4 extends W3DL.Matrix {
       new W3DL.Vector4D());
   }
 
-  static ScaleMatrix(x, y, z) {
+  static Scale(x, y, z) {
     DEBUG && W3DL.Utils.ValidateArguments([Number, Number, Number], arguments); // jshint ignore:line
     return new W3DL.Matrix4(new W3DL.Vector4D(x, 0, 0, 0), new W3DL.Vector4D(0, y, 0, 0), new W3DL.Vector4D(0, 0, z, 0), new W3DL.Vector4D());
   }
 
-  static TranslationMatrix(x, y, z) {
+  static Translation(x, y, z) {
     DEBUG && W3DL.Utils.ValidateArguments([Number, Number, Number], arguments); // jshint ignore:line
     return new W3DL.Matrix4(new W3DL.Vector4D(1, 0, 0, x), new W3DL.Vector4D(0, 1, 0, y), new W3DL.Vector4D(0, 0, 1, z), new W3DL.Vector4D());
   }
 
-  static TranslationFromVectorMatrix(vector) {
+  static TranslationFromVector(vector) {
     DEBUG && W3DL.Utils.ValidateArguments([[W3DL.Vector3D, W3DL.Vector4D]], arguments); // jshint ignore:line
-    return W3DL.Matrix4.TranslationMatrix(vector.x, vector.y, vector.z);
+    return W3DL.Matrix4.Translation(vector.x, vector.y, vector.z);
   }
 
-  static CameraMatrix(position, lookAt, upVector) {
+  static Camera(position, lookAt, upVector) {
     DEBUG && W3DL.Utils.ValidateArguments([[W3DL.Vector3D, W3DL.Vector4D], [W3DL.Vector3D, W3DL.Vector4D], [W3DL.Vector3D, W3DL.Vector4D]], arguments); // jshint ignore:line
     var pos = (position instanceof W3DL.Vector3D ? position : new W3DL.Vector3D(position.x, position.y, position.z));
     var look = (lookAt instanceof W3DL.Vector3D ? lookAt : new W3DL.Vector3D(lookAt.x, lookAt.y, lookAt.z));
     var up = (upVector instanceof W3DL.Vector3D ? upVector : new W3DL.Vector3D(upVector.x, upVector.y, upVector.z));
 
     var n = pos.subtract(look).normalized;
-    var u = up.cross(n).normalized;
+    var u = up.normalized.cross(n).normalized;
     var v = n.cross(u);
 
     var matrix = new W3DL.Matrix4(new W3DL.Vector4D(u.x, u.y, u.z), new W3DL.Vector4D(v.x, v.y, v.z), new W3DL.Vector4D(n.x, n.y, n.z), new W3DL.Vector4D());
@@ -311,14 +333,14 @@ W3DL.Matrix4 = class Matrix4 extends W3DL.Matrix {
     return matrix;
   }
 
-  static FrustrumProjetionMatrix(xMin, yMin, xMax, yMax, nearPlane, farPlane) {
+  static FrustumProjetion(xMin, yMin, xMax, yMax, nearPlane, farPlane) {
     DEBUG && W3DL.Utils.ValidateArguments([Number, Number, Number, Number, Number, Number], arguments); // jshint ignore:line
     throw new Error("Unimplemented.");
   }
 
-  static SymmetricPerspectiveProjectionMatrix(fieldOfView, aspectRatio, nearPlane, farPlane) {
+  static SymmetricPerspectiveProjection(fieldOfView, aspectRatio, nearPlane, farPlane) {
     DEBUG && W3DL.Utils.ValidateArguments([Number, Number, Number, Number], arguments); // jshint ignore:line
-    var matrix = W3DL.Matrix4.IdentityMatrix();
+    var matrix = W3DL.Matrix4.Identity();
     var cot = 1 / Math.tan(W3DL.Math.DegreeToRadian(fieldOfView / 2));
     matrix.entries[0][0] = cot / aspectRatio;
     matrix.entries[1][1] = cot;

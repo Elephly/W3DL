@@ -40,16 +40,64 @@
  * @class
  */
 W3DL.IndexedVertexArray = class IndexedVertexArray {
-  constructor(vertexArray = null, numVertices = 0) {
-    DEBUG &amp;&amp; W3DL.Utils.ValidateArguments([Array, Number], arguments, 0); // jshint ignore:line
+  constructor(vertexArray = []) {
+    DEBUG &amp;&amp; W3DL.Utils.ValidateArguments([Array], arguments, 0); // jshint ignore:line
     this.vertices = vertexArray;
-    this.vertexCount = numVertices;
-    this.vao = 0;
-    this.vbo = 0;
+    this.vertexArrayObject = 0;
+    this.vertexBufferObject = 0;
   }
 
-  initialize(vertexArray = null, numVertices = 0) {
-    DEBUG &amp;&amp; W3DL.Utils.ValidateArguments([Array, Number], arguments, 0); // jshint ignore:line
+  initialize(gl) {
+    DEBUG &amp;&amp; W3DL.Utils.ValidateArguments([WebGLRenderingContext], arguments); // jshint ignore:line
+    if (this.vertices &amp;&amp; this.vertices.length > 0) {
+      let v = this.vertices[0];
+
+      let posSize = v.position.toArray.length;
+      let colSize = v.color.toArray.length;
+      let texSize = v.texture.toArray.length;
+      let norSize = v.normal.toArray.length;
+      let vecSize = posSize + colSize + texSize + norSize;
+
+      let offsets = {};
+      let offset = 0;
+      for (let k in v) {
+        offsets[k] = offset;
+        offset += v[k].toArray.length;
+      }
+
+      // The following 4 values are hardcoded as they should be consistent along
+      // all shaders
+      let posInd = 0; // gl.getAttribLocation(shaderProgram.id, "vtxPosition");
+      let norInd = 1; // gl.getAttribLocation(shaderProgram.id, "vtxNormal");
+      let colInd = 2; // gl.getAttribLocation(shaderProgram.id, "vtxColor");
+      let texInd = 3; // gl.getAttribLocation(shaderProgram.id, "vtxTextureCoord");
+
+      this.vertexArrayObject = gl.genVertexArrays();
+      gl.bindVertexArray(vertexArrayObject);
+
+      this.vertexBufferObject = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, vertexBufferObject);
+      gl.bufferData(gl.ARRAY_BUFFER, this.vertices.toFloat32Array, gl.STATIC_DRAW);
+
+      gl.vertexAttribPointer(posInd, posSize, gl.FLOAT, gl.FALSE, vecSize * Float32Array.BYTES_PER_ELEMENT, offsets.position * Float32Array.BYTES_PER_ELEMENT);
+      gl.enableVertexAttribArray(positionLoc);
+      //gl.vertexAttribDivisor(posInd, 0);
+
+      gl.vertexAttribPointer(norInd, norSize, gl.FLOAT, gl.FALSE, vecSize * Float32Array.BYTES_PER_ELEMENT, offsets.normal * Float32Array.BYTES_PER_ELEMENT);
+      gl.enableVertexAttribArray(norInd);
+      //gl.vertexAttribDivisor(norInd, 0);
+
+      gl.vertexAttribPointer(colInd, colSize, gl.FLOAT, gl.FALSE, vecSize * Float32Array.BYTES_PER_ELEMENT, offsets.color * Float32Array.BYTES_PER_ELEMENT);
+      gl.enableVertexAttribArray(colInd);
+      //gl.vertexAttribDivisor(colInd, 0);
+
+      gl.vertexAttribPointer(texInd, texSize, gl.FLOAT, gl.FALSE, vecSize * Float32Array.BYTES_PER_ELEMENT, offsets.texture * Float32Array.BYTES_PER_ELEMENT);
+      gl.enableVertexAttribArray(texInd);
+      //gl.vertexAttribDivisor(texInd, 0);
+
+      gl.enableVertexAttribArray(0);
+      gl.bindVertexArray(0);
+    }
   }
 };
 </code></pre>
@@ -62,13 +110,13 @@ W3DL.IndexedVertexArray = class IndexedVertexArray {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="W3DL.ColorRGBA.html">ColorRGBA</a></li><li><a href="W3DL.Colors.html">Colors</a></li><li><a href="W3DL.GraphicsObject3D.html">GraphicsObject3D</a></li><li><a href="W3DL.IndexedVertexArray.html">IndexedVertexArray</a></li><li><a href="W3DL.Material.html">Material</a></li><li><a href="W3DL.Matrix.html">Matrix</a></li><li><a href="W3DL.Matrix4.html">Matrix4</a></li><li><a href="W3DL.Object3D.html">Object3D</a></li><li><a href="W3DL.ShaderProgram.html">ShaderProgram</a></li><li><a href="W3DL.Texture2D.html">Texture2D</a></li><li><a href="W3DL.Vector.html">Vector</a></li><li><a href="W3DL.Vector2D.html">Vector2D</a></li><li><a href="W3DL.Vector3D.html">Vector3D</a></li><li><a href="W3DL.Vector4D.html">Vector4D</a></li><li><a href="W3DL.Vertex.html">Vertex</a></li></ul><h3>Namespaces</h3><ul><li><a href="W3DL.html">W3DL</a></li><li><a href="W3DL.Math.html">Math</a></li><li><a href="W3DL.Utils.html">Utils</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="W3DL.Application.html">Application</a></li><li><a href="W3DL.ColorRGBA.html">ColorRGBA</a></li><li><a href="W3DL.Colors.html">Colors</a></li><li><a href="W3DL.GraphicsObject3D.html">GraphicsObject3D</a></li><li><a href="W3DL.IndexedVertexArray.html">IndexedVertexArray</a></li><li><a href="W3DL.Material.html">Material</a></li><li><a href="W3DL.Matrix.html">Matrix</a></li><li><a href="W3DL.Matrix4.html">Matrix4</a></li><li><a href="W3DL.Object3D.html">Object3D</a></li><li><a href="W3DL.ShaderProgram.html">ShaderProgram</a></li><li><a href="W3DL.Texture2D.html">Texture2D</a></li><li><a href="W3DL.Vector.html">Vector</a></li><li><a href="W3DL.Vector2D.html">Vector2D</a></li><li><a href="W3DL.Vector3D.html">Vector3D</a></li><li><a href="W3DL.Vector4D.html">Vector4D</a></li><li><a href="W3DL.Vertex.html">Vertex</a></li></ul><h3>Namespaces</h3><ul><li><a href="W3DL.html">W3DL</a></li><li><a href="W3DL.Math.html">Math</a></li><li><a href="W3DL.Utils.html">Utils</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Oct 15 2017 15:21:59 GMT-0400 (Eastern Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Nov 05 2017 08:18:30 GMT-0500 (Eastern Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

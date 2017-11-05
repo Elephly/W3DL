@@ -1,12 +1,12 @@
-var textureFragmentShaderText =
-[
-"precision mediump float;",
-"",
-"varying vec2 fragTexCoord;",
-"uniform sampler2D sampler;",
-"",
-"void main()",
-"{",
-"  gl_FragColor = texture2D(sampler, fragTexCoord);",
-"}",
-].join("\n");
+// jshint esversion: 6
+
+let textureFragmentShaderText =
+`precision mediump float;
+
+varying vec2 fragTexCoord;
+uniform sampler2D sampler;
+
+void main()
+{
+  gl_FragColor = texture2D(sampler, fragTexCoord);
+}`;

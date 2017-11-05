@@ -17,8 +17,8 @@
   },
   "homepage": "https://nicholaschiasson.github.io/W3DL/index.html",
   "dependencies": {
+    "fs-extra": "^4.0.2",
     "jsdoc-api": "^4.0.0",
-    "rimraf": "*",
-    "uglify-es": "*"
+    "uglify-es": "^3.1.7"
   }
 }
