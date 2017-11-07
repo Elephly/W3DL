@@ -1,4 +1,4 @@
-#!/usr/bin/node
+#!/usr/bin/env node
 
 // jshint esversion: 6
 
@@ -141,8 +141,10 @@ buildTypes.forEach(function(buildType) {
             url: "w3dl.min.js.map",
           },
           compress: {
-            dead_code: true,
-            unused: true
+            keep_fnames: true
+          },
+          mangle: {
+            keep_classnames: true
           },
           ecma: 6,
           warnings: true

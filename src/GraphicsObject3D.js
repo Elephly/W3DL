@@ -31,9 +31,9 @@ W3DL.GraphicsObject3D = class GraphicsObject3D extends W3DL.Object3D {
       /* TODO: This is a hack and should be removed. */
       this.children.forEach(function(child) {
         if (recursiveVAO) {
-          (/*(W3DL.GraphicsObject3D)*/(child)).initialize(shader, material, recursive, vertexArray, recursiveVAO);
+          child.initialize(shader, material, recursive, vertexArray, recursiveVAO);
         } else {
-          (/*(W3DL.GraphicsObject3D)*/(child)).initialize(shader, material, recursive);
+          child.initialize(shader, material, recursive);
         }
       });
       this.shaderProgram = shader;
@@ -44,7 +44,7 @@ W3DL.GraphicsObject3D = class GraphicsObject3D extends W3DL.Object3D {
 
   draw(gl, parentTransformation = W3DL.Matrix4.Identity()) {
     DEBUG && W3DL.Utils.ValidateArguments([WebGLRenderingContext, W3DL.Matrix4], arguments, 1); // jshint ignore:line
-    super.draw(parentTransformation);
+    super.draw(gl, parentTransformation);
     if (this.shaderProgram) {
       gl.useProgram(this.shaderProgram.id);
 
@@ -77,7 +77,7 @@ W3DL.GraphicsObject3D = class GraphicsObject3D extends W3DL.Object3D {
   setInheritedShader(shader) {
     DEBUG && W3DL.Utils.ValidateArguments([W3DL.ShaderProgram], arguments); // jshint ignore:line
     this.children.forEach(function(child) {
-      (/*(W3DL.GraphicsObject3D)*/(child)).setInheritedShader(shader);
+      child.setInheritedShader(shader);
     });
     this.shaderProgram = shader;
   }
@@ -85,7 +85,7 @@ W3DL.GraphicsObject3D = class GraphicsObject3D extends W3DL.Object3D {
   setInheritedMaterial(material) {
     DEBUG && W3DL.Utils.ValidateArguments([W3DL.Material], arguments); // jshint ignore:line
     this.children.forEach(function(child) {
-      (/*(W3DL.GraphicsObject3D)*/(child)).setInheritedMaterial(material);
+      child.setInheritedMaterial(material);
     });
     this.objectMaterial = material;
   }
