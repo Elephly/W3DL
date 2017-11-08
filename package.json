@@ -10,8 +10,8 @@
     "type": "git",
     "url": "git+https://github.com/nicholaschiasson/W3DL.git"
   },
-  "author": "nicholaschiasson@namnamnamnam.com",
-  "license": "ISC",
+  "author": "nicholasomerchiasson@gmail.com",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/nicholaschiasson/W3DL/issues"
   },
@@ -20,5 +20,13 @@
     "fs-extra": "^4.0.2",
     "jsdoc-api": "^4.0.0",
     "uglify-es": "^3.1.7"
+  },
+  "devDependencies": {
+    "eslint": "^4.10.0",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-node": "^5.2.1",
+    "eslint-plugin-promise": "^3.6.0",
+    "eslint-plugin-standard": "^3.0.1"
   }
 }
